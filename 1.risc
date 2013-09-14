@@ -1,0 +1,4 @@
+.main:
+mov r2,2
+mulu r1,r2,-1
+.print r1
