@@ -1,4 +1,3 @@
 .main:
-mov r2,2
-mulu r1,r2,-1
-.print r1
+mov r2,0xffff
+.print r2

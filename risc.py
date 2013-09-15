@@ -14,9 +14,9 @@ def reg(a):
 	return a
 def getInt(a): 		#deals with white spaces and base
 	if a == '':return 0
-	try: return int("".join(a))
+	try: return I16(int("".join(a)))
 	except: 
-		try: return int("".join(a),16)
+		try: return I16(int("".join(a),16))
 		except : return register[reg("".join(a))]
 def get32(a,c):
 	if c == 'h': return (I32(getInt(a)) << 16)
