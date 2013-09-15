@@ -39,60 +39,63 @@ op['or'] = lambda x,y : x | y
 op['lsl'] = lambda x,y : x<<y
 op['asr'] = lambda x,y : x>>y
 op['lsr'] = lambda x,y : I32((UI32(x))>>y)
-
-f = open(sys.argv[1],"r")
-CODE = f.read().lower().replace(':',':\n').replace('\t',' ').split('\n')
-f.close()							#file read and formatted to our convnience
-lines = len(CODE)
-register['r13'] = lines << 2
-labels = {}
-for i in range(lines):  			#hashing the labels
-	if len(CODE[i]) > 0 and CODE[i][-1] == ':' :
-		 labels[CODE[i].replace(' ','')[:-1]] = (i<<2) + 4
-register['r13'] = labels['.main'] 	   #start with .main label
-def compute(idx):
-	global register,memory,GT,E
-	FLAG  = True
-	parts = CODE[idx].replace(',',' ').split()
-	if len(parts) > 0: 
-		fun = parts[0]
-		if fun == 'beq': 
-			if E:
+try:
+	f = open(sys.argv[1],"r")
+	CODE = f.read().lower().replace(':',':\n').replace('\t',' ').split('\n')
+	f.close()							#file read and formatted to our convnience
+	lines = len(CODE)
+	register['r13'] = lines << 2
+	labels = {}
+	for i in range(lines):  			#hashing the labels
+		if len(CODE[i]) > 0 and CODE[i][-1] == ':' :
+			 labels[CODE[i].replace(' ','')[:-1]] = (i<<2) + 4
+	register['r13'] = labels['.main'] 	   #start with .main label
+	def compute(idx):
+		global register,memory,GT,E
+		FLAG  = True
+		parts = CODE[idx].replace(',',' ').split()
+		if len(parts) > 0: 
+			fun = parts[0]
+			if fun == 'beq': 
+				if E:
+					register['r13'] = labels[parts[1]]
+					FLAG = False
+			elif fun == 'bgt':
+				if GT :
+					register['r13'] = labels[parts[1]]
+					FLAG = False
+			elif fun == 'b' : 
+				register['r13'] = labels[parts[1]]
+				FLAG = False	
+			elif fun == 'call' :
+				register['r15'] = register['r13'] + 4
 				register['r13'] = labels[parts[1]]
 				FLAG = False
-		elif fun == 'bgt':
-			if GT :
-				register['r13'] = labels[parts[1]]
+			elif fun == 'ret':
+				register['r13'] = register['r15']
 				FLAG = False
-		elif fun == 'b' : 
-			register['r13'] = labels[parts[1]]
-			FLAG = False	
-		elif fun == 'call' :
-			register['r15'] = register['r13'] + 4
-			register['r13'] = labels[parts[1]]
-			FLAG = False
-		elif fun == 'ret':
-			register['r13'] = register['r15']
-			FLAG = False
-		elif fun == 'ld':
-			i = getIdx(parts[2:])
-			register[reg(parts[1])] = I32(memory[i] + (memory[i+1]<<8) + (memory[i+2]<<16) + (memory[i+2]<<24))
-		elif fun == 'st':
-			i = getIdx(parts[2:])
-			x = register[reg(parts[1])]
-			memory[i],memory[i+1],memory[i+2],memory[i+3] = I8(x),I8(x>>8),I8(x>>16),I8(x>>24)
-		elif fun.strip('u').strip('h') == 'mov':
-			register[reg(parts[1])] = get32(parts[2:],fun[-1])
-		elif fun.strip('h').strip('u') == 'cmp' :
-			E,GT = (register[reg(parts[1])] == get32(parts[2:],fun[-1])),(register[reg(parts[1])] > get32(parts[2:],fun[-1]))
-		elif fun == 'not':
-			register[reg(parts[1])] = NP.bitwise_not(get32(parts[2:],fun[-1]))
-		elif fun == '.print':
-			for x in parts[1:]:print getInt(x),
-			print
-		elif fun.strip('h').strip('u') in op :
-			register[reg(parts[1])] = op[fun.strip('h').strip('u')](register[reg(parts[2])],get32(parts[3:],fun[-1]))
-	if FLAG : register['r13'] += 4
-lines <<= 2
-while register['r13'] < lines : 	
-		compute(register['r13']>>2)
+			elif fun == 'ld':
+				i = getIdx(parts[2:])
+				register[reg(parts[1])] = I32(memory[i] + (memory[i+1]<<8) + (memory[i+2]<<16) + (memory[i+2]<<24))
+			elif fun == 'st':
+				i = getIdx(parts[2:])
+				x = register[reg(parts[1])]
+				memory[i],memory[i+1],memory[i+2],memory[i+3] = I8(x),I8(x>>8),I8(x>>16),I8(x>>24)
+			elif fun.strip('u').strip('h') == 'mov':
+				register[reg(parts[1])] = get32(parts[2:],fun[-1])
+			elif fun.strip('h').strip('u') == 'cmp' :
+				E,GT = (register[reg(parts[1])] == get32(parts[2:],fun[-1])),(register[reg(parts[1])] > get32(parts[2:],fun[-1]))
+			elif fun == 'not':
+				register[reg(parts[1])] = NP.bitwise_not(get32(parts[2:],fun[-1]))
+			elif fun == '.print':
+				for x in parts[1:]:print getInt(x),
+				print
+			elif fun.strip('h').strip('u') in op :
+				register[reg(parts[1])] = op[fun.strip('h').strip('u')](register[reg(parts[2])],get32(parts[3:],fun[-1]))
+		if FLAG : register['r13'] += 4
+	lines <<= 2
+	while register['r13'] < lines : 	
+			compute(register['r13']>>2)
+except:
+	print "Please follow following format: "
+	print "./risc.py <filename>"	
