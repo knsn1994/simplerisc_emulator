@@ -1,11 +1,7 @@
 This is a simplerisc assemply emulator written in python.
 It uses numpy.
 Usage: 
-command line : 
-$./run.sh <filename>
-
-OR
-
+command line :
 $./risc.py <filename>
 
 pre requisites: 
