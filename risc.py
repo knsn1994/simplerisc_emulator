@@ -3,7 +3,7 @@ import warnings
 import numpy as NP
 import sys
 warnings.filterwarnings("ignore") #just to mute the warnings
-I8,I16,UI16,I32,UI32 = NP.int8, NP.int16, NP.uint16, NP.int32, NP.uint32  #some integer types
+I8,I16,UI16,I32,UI32 = NP.uint8, NP.int16, NP.uint16, NP.int32, NP.uint32  #some integer types
 memory = NP.zeros(4096,I8)              #4096 bytes memory
 register = {'r0':I32(0), 'r1':I32(0), 'r2':I32(0), 'r3':I32(0), 'r4':I32(0), 'r5':I32(0), 'r6':I32(0), 'r7':I32(0), 'r8':I32(0), 'r9':I32(0), 'r10':I32(0), 'r11':I32(0), 'r12':I32(0),'r13':I32(0),'r14':I32(4096),'r15':I32(0)}		#all the register
 E,GT = False,False 				#flags
