@@ -1,3 +1,4 @@
 .main:
-mov r2,0xffff
-.print r2
+//blah
+not r1,2 //does the negation
+.print r1
