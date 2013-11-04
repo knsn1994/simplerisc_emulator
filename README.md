@@ -13,4 +13,4 @@ command line :
 python should be installed along with numpy module
 
 ###Assembly Language Emulated : ###
-This scripts emulates "SimpleRisc ISA assembly". Please check `.risc` files in the repository to get a hint of the syntax.
+This script emulates "SimpleRisc ISA" and most of the "ARM" instructions. Note that simplerisc is an ISA developed in IIT Delhi for the pupose of teaching. It is quite similar to "ARM". See the .risc files to get the idea of the ISA.
